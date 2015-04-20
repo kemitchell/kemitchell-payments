@@ -1,6 +1,7 @@
 /* jshint mocha: true */
 var assign = require('object-assign');
 var clone = require('clone');
+var concat = require('concat-stream');
 var expect = require('chai').expect;
 var http = require('http');
 
@@ -21,6 +22,34 @@ describe('Static Pages', function() {
         };
       })();
       done();
+    });
+  });
+
+  describe('GET /robots.txt', function() {
+    before(function(done) {
+      this.request({path: '/robots.txt'}, function(response) {
+        this.response = response;
+        done();
+      }.bind(this)).end();
+    });
+
+    it('responds 200', function() {
+      expect(this.response)
+        .to.have.property('statusCode', 200);
+    });
+
+    it('serves Content-Type: text/html', function() {
+      expect(this.response.headers)
+        .to.have.property('content-type', 'text/plain');
+    });
+
+    it('disallows robots', function(done) {
+      this.response.pipe(concat(function(buffered) {
+        var body = buffered.toString();
+        expect(body)
+          .to.include('Disallow');
+        done();
+      }));
     });
   });
 

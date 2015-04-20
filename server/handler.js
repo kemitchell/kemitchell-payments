@@ -28,6 +28,8 @@ module.exports = function(stripeSecretKey, stripePublishableKey) {
   var stripeAPI = stripe(stripeSecretKey);
   var router = routes();
 
+  router.addRoute('/robots.txt', serve('robots.txt', 'text/plain'));
+
   router.addRoute('/', serve('index.html', 'text/html'));
 
   router.addRoute('/payments.css', serve('payments.css', 'text/css'));
