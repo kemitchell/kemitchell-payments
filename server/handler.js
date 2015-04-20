@@ -94,6 +94,7 @@ module.exports = function(stripeSecretKey, stripePublishableKey) {
   return function(request, response) {
     if (request.headers['x-forwarded-proto'] === 'http') {
       var location = 'https://' + request.headers.host + request.url;
+      console.log('Redirecting to HTTPS');
       response.statusCode = 301;
       response.setHeader('Location', location);
     } else {
