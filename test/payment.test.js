@@ -23,19 +23,16 @@ describe('Payment Processing Endpoint', function() {
   });
 
   describe('POST /payment', function() {
-    before(function(done) {
-      this.request({
-        method: 'POST',
-        path: '/payment'
-      }, function(response) {
-        this.response = response;
-        done();
-      }.bind(this))
-        .end();
-    });
-
-    it('responds 201', function() {
-      expect(this.response).to.have.property('statusCode', 201);
+    describe('without a request body', function() {
+      it('responds 400', function(done) {
+        this.request({
+          method: 'POST',
+          path: '/payment'
+        }, function(response) {
+          expect(response).to.have.property('statusCode', 400);
+          done();
+        }).end();
+      });
     });
   });
 

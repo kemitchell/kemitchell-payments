@@ -40,45 +40,50 @@ module.exports = function(stripeSecretKey, stripePublishableKey) {
       .pipe(response);
   });
 
-  var STRIPE_ERROR_CODES = {
-    'incorrect_number': 'The card number is incorrect.',
-    'invalid_number':
-      'The card number is not a valid credit card number.',
-    'invalid_expiry_month': 'The card\'s expiration month is invalid.',
-    'invalid_expiry_year': 'The card\'s expiration year is invalid.',
-    'invalid_cvc': 'The card\'s security code is invalid.',
-    'expired_card': 'The card has expired.',
-    'incorrect_cvc': 'The card\'s security code is incorrect.',
-    'incorrect_zip': 'The card\'s zip code failed validation.',
-    'card_declined': 'The card was declined.',
-    'missing': 'There is no card on a customer that is being charged.',
-    'processing_error': 'An error occurred while processing the card.'
-  };
+  // var STRIPE_ERROR_CODES = {
+  //   'incorrect_number': 'The card number is incorrect.',
+  //   'invalid_number':
+  //     'The card number is not a valid credit card number.',
+  //   'invalid_expiry_month': 'The card\'s expiration month is invalid.',
+  //   'invalid_expiry_year': 'The card\'s expiration year is invalid.',
+  //   'invalid_cvc': 'The card\'s security code is invalid.',
+  //   'expired_card': 'The card has expired.',
+  //   'incorrect_cvc': 'The card\'s security code is incorrect.',
+  //   'incorrect_zip': 'The card\'s zip code failed validation.',
+  //   'card_declined': 'The card was declined.',
+  //   'missing': 'There is no card on a customer that is being charged.',
+  //   'processing_error': 'An error occurred while processing the card.'
+  // };
 
   router.addRoute('/payment', function(request, response) {
     if (request.method === 'POST') {
-      request.pipe(concat(function(body) {
-        body = JSON.parse(body);
-        stripeAPI.charges.create({
-          amount: body.amount,
-          currency: 'usd',
-          source: body.stripeToken,
-          description: 'web payment'
-        }, function(error) {
-          if (error) {
-            if (error.code === 'card_declined') {
-              response.statusCode = 400;
-              response.end();
+      request.pipe(concat(function(buffered) {
+        try {
+          var body = JSON.parse(buffered);
+          stripeAPI.charges.create({
+            amount: body.amount,
+            currency: 'usd',
+            source: body.stripeToken,
+            description: 'web payment'
+          }, function(error) {
+            if (error) {
+              if (error.code === 'card_declined') {
+                response.statusCode = 400;
+                response.end();
+              } else {
+                console.error(error);
+                response.statusCode = 500;
+                response.end();
+              }
             } else {
-              console.error(error);
-              response.statusCode = 500;
+              response.statusCode = 201;
               response.end();
             }
-          } else {
-            response.statusCode = 201;
-            response.end();
-          }
-        });
+          });
+        } catch (e) {
+          response.statusCode = 400;
+          response.end();
+        }
       }));
     } else {
       response.statusCode = 405;
