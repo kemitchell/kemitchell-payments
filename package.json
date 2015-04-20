@@ -23,7 +23,7 @@
   "main": "server/handler",
   "private": true,
   "scripts": {
-    "lint": "jshint js && jscs js",
+    "lint": "jshint client server test && jscs client server test",
     "start": "node server/serve.js",
     "test": "mocha"
   }
