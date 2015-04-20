@@ -24,13 +24,32 @@ var serve = function(file, mime) {
   };
 };
 
+var STRIPE_ERROR_CODES = {
+  'incorrect_number': 'The card number is incorrect.',
+  'invalid_number':
+    'The card number is not a valid credit card number.',
+  'invalid_expiry_month': 'The card\'s expiration month is invalid.',
+  'invalid_expiry_year': 'The card\'s expiration year is invalid.',
+  'invalid_cvc': 'The card\'s security code is invalid.',
+  'expired_card': 'The card has expired.',
+  'incorrect_cvc': 'The card\'s security code is incorrect.',
+  'incorrect_zip': 'The card\'s zip code failed validation.',
+  'card_declined': 'The card was declined.',
+  'missing': 'There is no card on a customer that is being charged.',
+  'processing_error': 'An error occurred while processing the card.'
+};
+
 module.exports = function(stripeSecretKey, stripePublishableKey) {
   var stripeAPI = stripe(stripeSecretKey);
   var router = routes();
 
-  router.addRoute('/robots.txt', serve('robots.txt', 'text/plain'));
+  router.addRoute('/', function(request, response) {
+    response.statusCode = 301;
+    response.setHeader('Location', 'http://kemitchell.com');
+    response.end();
+  });
 
-  router.addRoute('/', serve('index.html', 'text/html'));
+  router.addRoute('/robots.txt', serve('robots.txt', 'text/plain'));
 
   router.addRoute('/payments.css', serve('payments.css', 'text/css'));
 
@@ -42,23 +61,10 @@ module.exports = function(stripeSecretKey, stripePublishableKey) {
       .pipe(response);
   });
 
-  var STRIPE_ERROR_CODES = {
-    'incorrect_number': 'The card number is incorrect.',
-    'invalid_number':
-      'The card number is not a valid credit card number.',
-    'invalid_expiry_month': 'The card\'s expiration month is invalid.',
-    'invalid_expiry_year': 'The card\'s expiration year is invalid.',
-    'invalid_cvc': 'The card\'s security code is invalid.',
-    'expired_card': 'The card has expired.',
-    'incorrect_cvc': 'The card\'s security code is incorrect.',
-    'incorrect_zip': 'The card\'s zip code failed validation.',
-    'card_declined': 'The card was declined.',
-    'missing': 'There is no card on a customer that is being charged.',
-    'processing_error': 'An error occurred while processing the card.'
-  };
-
-  router.addRoute('/payment', function(request, response) {
-    if (request.method === 'POST') {
+  router.addRoute('/new', function(request, response) {
+    if (request.method === 'GET') {
+      serve('index.html', 'text/html')(request, response);
+    } else if (request.method === 'POST') {
       request.pipe(concat(function(buffered) {
         try {
           var body = JSON.parse(buffered);

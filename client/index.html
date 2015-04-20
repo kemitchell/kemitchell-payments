@@ -20,8 +20,7 @@
           Charge Confirmation
         </div>
         <div class=panel-body>
-          <p>Thank you for submitting your credit card details for payment!</p>
-          <p>The credit card processing company will send me an e-mail confirming your transaction, which I will forward to you.</p>
+          <p>Thank you for submitting your credit card details for payment! Please expect confirmation of your payment shortly.</p>
           <p>Best,<br>K. E. Mitchell</p>
         </div>
       </div>
@@ -43,7 +42,7 @@
             <div class=form-group>
               <label for=number class='control-label col-sm-3'>Credit Card Number</label>
               <div class=col-sm-9>
-                <input class=form-control type=text data-stripe=number pattern='\d{12,14}'>
+                <input class=form-control type=text data-stripe=number pattern='^\d+$'>
                 <p class=help-block>Enter without spaces.</p>
               </div>
             </div>

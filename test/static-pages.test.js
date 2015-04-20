@@ -7,13 +7,11 @@ var http = require('http');
 
 var handler = require('..');
 
-var RANDOM_HIGH_PORT = 0;
-
 describe('Static Pages', function() {
   before(function(done) {
     var test = this;
     test.server = http.createServer(handler());
-    test.server.listen(RANDOM_HIGH_PORT, function() {
+    test.server.listen(0, function() {
       test.request = (function() {
         var defaultOptions = {port: test.server.address().port};
         return function(newOptions, callback) {
@@ -53,9 +51,9 @@ describe('Static Pages', function() {
     });
   });
 
-  describe('GET /', function() {
+  describe('GET /new', function() {
     before(function(done) {
-      this.request({path: '/'}, function(response) {
+      this.request({path: '/new'}, function(response) {
         this.response = response;
         done();
       }.bind(this)).end();
@@ -113,7 +111,8 @@ describe('Static Pages', function() {
   describe('GET /<nonexistent>', function() {
     it('responds 404', function(done) {
       this.request({path: '/nonexistent'}, function(response) {
-        expect(response).to.have.property('statusCode', 404);
+        expect(response)
+          .to.have.property('statusCode', 404);
         done();
       }).end();
     });

@@ -34,7 +34,7 @@
       }
       var token = response.id;
       var request = new XMLHttpRequest();
-      request.open('POST', '/payment', true);
+      request.open('POST', '/new', true);
       request.onload = function() {
         console.log(request);
         if (request.status === 201) {

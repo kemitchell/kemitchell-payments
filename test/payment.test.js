@@ -22,27 +22,29 @@ describe('Payment Processing Endpoint', function() {
     });
   });
 
-  describe('POST /payment', function() {
+  describe('POST /new', function() {
     describe('without a request body', function() {
       it('responds 400', function(done) {
         this.request({
           method: 'POST',
-          path: '/payment'
+          path: '/new'
         }, function(response) {
-          expect(response).to.have.property('statusCode', 400);
+          expect(response)
+            .to.have.property('statusCode', 400);
           done();
         }).end();
       });
     });
   });
 
-  describe('GET /payment', function() {
+  describe('PUT /new', function() {
     it('responds 405', function(done) {
       this.request({
-        method: 'GET',
-        path: '/payment'
+        method: 'PUT',
+        path: '/new'
       }, function(response) {
-        expect(response).to.have.property('statusCode', 405);
+        expect(response)
+          .to.have.property('statusCode', 405);
         done();
       }).end();
     });
