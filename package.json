@@ -18,7 +18,8 @@
     "object-assign": "^2.0.0"
   },
   "engines": {
-    "iojs": "1.7.x"
+    "iojs": "1.7.x",
+    "npm": "2.8.x"
   },
   "main": "server/handler",
   "private": true,
