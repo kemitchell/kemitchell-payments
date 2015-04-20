@@ -112,6 +112,7 @@ module.exports = function(stripeSecretKey, stripePublishableKey) {
       console.log('Redirecting to HTTPS');
       response.statusCode = 301;
       response.setHeader('Location', location);
+      response.end();
     } else {
       var route = router.match(url.parse(request.url).pathname);
       if (route) {
