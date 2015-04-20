@@ -1,6 +1,14 @@
 {
   "name": "kemitchell-payments",
-  "version": "",
+  "description": "online credit card payment portal",
+  "version": "0.0.0",
+  "dependencies": {
+    "concat-stream": "^1.4.8",
+    "heroku-ping": "^0.1.0",
+    "routes": "^2.0.0",
+    "stream-replace": "^1.0.0",
+    "stripe": "^3.3.4"
+  },
   "devDependencies": {
     "chai": "^2.2.0",
     "clone": "^1.0.2",
@@ -10,17 +18,14 @@
     "mocha": "^2.2.4",
     "object-assign": "^2.0.0"
   },
+  "engines": {
+    "iojs": "1.7.x"
+  },
   "main": "server/handler",
+  "private": true,
   "scripts": {
     "lint": "jshint js && jscs js",
     "start": "node server/serve.js",
     "test": "mocha"
-  },
-  "dependencies": {
-    "concat-stream": "^1.4.8",
-    "heroku-ping": "^0.1.0",
-    "routes": "^2.0.0",
-    "stream-replace": "^1.0.0",
-    "stripe": "^3.3.4"
   }
 }
