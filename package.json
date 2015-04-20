@@ -25,6 +25,7 @@
   "private": true,
   "scripts": {
     "lint": "jshint client server test && jscs client server test",
+    "pre-commit": "npm run lint && npm run test",
     "start": "node server/serve.js",
     "test": "mocha"
   }
