@@ -3,38 +3,52 @@
 (function() {
   Stripe.setPublishableKey('STRIPE_PUBLISHABLE_KEY');
 
-  var onCreateToken = function(status, response) {
+  var showErrorMessage = function(message) {
     var form = document.getElementById('payment-form');
     var errors = form.getElementsByClassName('payment-errors')[0];
+    var text = document.createTextNode(message);
+    while (errors.firstChild) {
+      errors.removeChild(errors.firstChild);
+    }
+    errors.appendChild(text);
+    errors.className = errors.className.replace(' hidden', '');
+  };
+
+  var showSuccess = function() {
+    var creditCard = document.getElementById('creditCard');
+    creditCard.className = creditCard.className + ' hidden';
+    var thankYou = document.getElementById('thankYou');
+    thankYou.className = thankYou.className.replace(' hidden', '');
+  };
+
+  var onCreateToken = function(status, response) {
+    var form = document.getElementById('payment-form');
     if (response.error) {
-      var text = document.createTextNode(response.error.message);
-      while (errors.firstChild) {
-        errors.removeChild(errors.firstChild);
-      }
-      errors.appendChild(text);
-      errors.className = errors.className.replace(' hidden', '');
+      showErrorMessage(response.error.message);
       var button = form.getElementsByTagName('button')[0];
       button.attributes.disabled = false;
     } else {
+      var errors = form.getElementsByClassName('payment-errors')[0];
       if (errors.className.indexOf('hidden') < 0) {
         errors.className = errors.className + ' hidden';
       }
       var token = response.id;
-      // form.submit();
       var request = new XMLHttpRequest();
       request.open('POST', '/payment', true);
       request.onload = function() {
-        if (request.status === 200) {
-          console.log(200);
+        console.log(request);
+        if (request.status === 201) {
+          showSuccess();
         } else {
-          console.log('else');
+          showErrorMessage(request.response);
         }
       };
+      var amountInput = document.getElementsByName('amount')[0];
+      var cents = parseInt(amountInput.value) * 100;
       request.send(JSON.stringify({
-        amount: document.getElementsByName('amount')[0].value,
+        amount: cents,
         stripeToken: token
       }));
-      event.preventDefault();
     }
   };
 

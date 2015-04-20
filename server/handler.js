@@ -40,20 +40,20 @@ module.exports = function(stripeSecretKey, stripePublishableKey) {
       .pipe(response);
   });
 
-  // var STRIPE_ERROR_CODES = {
-  //   'incorrect_number': 'The card number is incorrect.',
-  //   'invalid_number':
-  //     'The card number is not a valid credit card number.',
-  //   'invalid_expiry_month': 'The card\'s expiration month is invalid.',
-  //   'invalid_expiry_year': 'The card\'s expiration year is invalid.',
-  //   'invalid_cvc': 'The card\'s security code is invalid.',
-  //   'expired_card': 'The card has expired.',
-  //   'incorrect_cvc': 'The card\'s security code is incorrect.',
-  //   'incorrect_zip': 'The card\'s zip code failed validation.',
-  //   'card_declined': 'The card was declined.',
-  //   'missing': 'There is no card on a customer that is being charged.',
-  //   'processing_error': 'An error occurred while processing the card.'
-  // };
+  var STRIPE_ERROR_CODES = {
+    'incorrect_number': 'The card number is incorrect.',
+    'invalid_number':
+      'The card number is not a valid credit card number.',
+    'invalid_expiry_month': 'The card\'s expiration month is invalid.',
+    'invalid_expiry_year': 'The card\'s expiration year is invalid.',
+    'invalid_cvc': 'The card\'s security code is invalid.',
+    'expired_card': 'The card has expired.',
+    'incorrect_cvc': 'The card\'s security code is incorrect.',
+    'incorrect_zip': 'The card\'s zip code failed validation.',
+    'card_declined': 'The card was declined.',
+    'missing': 'There is no card on a customer that is being charged.',
+    'processing_error': 'An error occurred while processing the card.'
+  };
 
   router.addRoute('/payment', function(request, response) {
     if (request.method === 'POST') {
@@ -65,11 +65,18 @@ module.exports = function(stripeSecretKey, stripePublishableKey) {
             currency: 'usd',
             source: body.stripeToken,
             description: 'web payment'
-          }, function(error) {
-            if (error) {
-              if (error.code === 'card_declined') {
+          }, function(errorObject) {
+            if (errorObject) {
+              var error = errorObject.error;
+              if (
+                error === 'invalid_request_error' ||
+                error === 'api_error'
+              ) {
                 response.statusCode = 400;
-                response.end();
+                response.end('Invalid request');
+              } else if (error === 'card_error') {
+                response.statusCode = 400;
+                response.end(STRIPE_ERROR_CODES[error.code]);
               } else {
                 console.error(error);
                 response.statusCode = 500;
